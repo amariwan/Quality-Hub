@@ -1,0 +1,10 @@
+*.pyc
+.ruff_cache
+.pytest_cache
+.venv
+profile.html
+profile.speedscope.json
+.github
+note.*
+.env.*
+docs/

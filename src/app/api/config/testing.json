@@ -1,0 +1,47 @@
+{
+  "pdf": {
+    "compression_quality": 75,
+    "watermark_opacity": 0.2,
+    "watermark_font_size": 40,
+    "default_encryption_level": 128
+  },
+  "render": {
+    "quality": "medium",
+    "enable_forensic_markers": false,
+    "libreoffice_timeout_seconds": 60,
+    "cache_templates": false,
+    "max_concurrent_renders": 5
+  },
+  "job": {
+    "job_ttl_seconds": 300,
+    "cleanup_interval_seconds": 30,
+    "max_active_jobs": 10,
+    "max_file_size_mb": 10,
+    "enable_job_metrics": false,
+    "log_job_details": false
+  },
+  "security": {
+    "min_password_length": 4,
+    "require_password_digit": false,
+    "require_password_letter": false,
+    "max_upload_size_mb": 10,
+    "enable_rate_limiting": false
+  },
+  "features": {
+    "enable_draft_mode": true,
+    "enable_watermark": true,
+    "enable_barcode": false,
+    "enable_encryption": true,
+    "enable_pdfa_conversion": false,
+    "enable_async_rendering": true,
+    "enable_ai_template_suggestions": false,
+    "enable_advanced_analytics": false
+  },
+  "performance": {
+    "cache_strategy": "none",
+    "cache_max_size_mb": 128,
+    "worker_threads": 2,
+    "max_memory_usage_mb": 512,
+    "enable_memory_monitoring": false
+  }
+}

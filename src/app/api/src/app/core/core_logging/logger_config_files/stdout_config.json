@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "disable_existing_loggers": false,
+  "formatters": {
+    "system_json": {
+      "()": "app.core.core_logging.MyLogger.MyJSONFormatter",
+      "fmt_keys": {
+        "level": "levelname",
+        "message": "message",
+        "timestamp": "timestamp"
+      }
+    },
+    "single_json": {
+      "()": "app.core.core_logging.MyLogger.MyJSONFormatter",
+      "fmt_keys": {
+        "level": "levelname",
+        "message": "message",
+        "timestamp": "timestamp",
+        "logger": "name",
+        "function": "funcName",
+        "line": "lineno"
+      }
+    },
+    "journey_json": {
+      "()": "app.core.core_logging.MyLogger.MyJSONFormatter",
+      "fmt_keys": {
+        "message": "message",
+        "timestamp": "timestamp"
+      }
+    }
+  },
+  "handlers": {
+    "system_stdout": {
+      "class": "logging.StreamHandler",
+      "formatter": "system_json",
+      "stream": "ext://sys.stdout"
+    },
+    "single_stdout": {
+      "class": "logging.StreamHandler",
+      "formatter": "single_json",
+      "stream": "ext://sys.stdout"
+    },
+    "journey_stdout": {
+      "class": "logging.StreamHandler",
+      "formatter": "journey_json",
+      "stream": "ext://sys.stdout"
+    }
+  },
+  "loggers": {
+    "system": {
+      "level": "INFO",
+      "handlers": ["system_stdout"],
+      "propagate": false
+    },
+    "single": {
+      "level": "DEBUG",
+      "handlers": ["single_stdout"],
+      "propagate": false
+    },
+    "journey": {
+      "level": "WARNING",
+      "handlers": ["journey_stdout"],
+      "propagate": false
+    }
+  },
+  "root": {
+    "level": "WARNING",
+    "handlers": ["system_stdout"]
+  }
+}

@@ -1,0 +1,14 @@
+line-length = 120
+target-version = "py313"
+
+[lint]
+select = ["E","F","I","B","UP","N","S","C90","ASYNC","PTH","PL"]
+ignore = ["S311", "E501", "N999", "N815", "PLC0415", "PLR2004", "S110", "E402"]
+exclude = ["src/db/migration/versions"]
+
+[lint.per-file-ignores]
+"tests/**" = ["S101", "S106", "S105", "S107", "N803", "N806"]
+"src/**/tests/**" = ["S101", "S106", "S105", "S107", "N803", "N806"]
+"src/logging/**" = ["N999", "E501", "N815"]
+"src/schemas/**" = ["N815", "E501"]
+"src/models/**" = ["PLC0415", "E501"]

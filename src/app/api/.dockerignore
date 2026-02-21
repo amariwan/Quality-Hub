@@ -1,0 +1,57 @@
+# Source control
+.git
+.gitignore
+
+# Python build artefacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Local virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Tool caches
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.hypothesis/
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Node / frontend artefacts
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+pip-wheel-metadata/
+wheelhouse/
+.pnp.*
+*.egg-info/
+
+# OS metadata
+*.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker caches
+docker-compose.override.yml
+docker-compose.*.yml

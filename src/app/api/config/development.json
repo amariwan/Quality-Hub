@@ -1,0 +1,82 @@
+{
+  "pdf": {
+    "default_page_size": "letter",
+    "compression_enabled": true,
+    "compression_quality": 85,
+    "watermark_opacity": 0.15,
+    "watermark_font_size": 48,
+    "watermark_rotation": 45.0,
+    "watermark_font_family": "Helvetica",
+    "barcode_height_mm": 20,
+    "barcode_width": 0.5,
+    "margin_left": 50,
+    "margin_right": 50,
+    "margin_top": 80,
+    "margin_bottom": 50,
+    "pdfa_version": "1",
+    "default_encryption_level": 128,
+    "allow_printing_default": true,
+    "allow_copy_default": false
+  },
+  "render": {
+    "quality": "high",
+    "enable_anchor_removal": true,
+    "enable_forensic_markers": true,
+    "enable_metadata_enrichment": true,
+    "libreoffice_timeout_seconds": 300,
+    "libreoffice_max_retries": 3,
+    "cache_templates": true,
+    "cache_ttl_seconds": 3600,
+    "max_concurrent_renders": 10,
+    "render_timeout_seconds": 600
+  },
+  "job": {
+    "job_ttl_seconds": 3600,
+    "cleanup_interval_seconds": 60,
+    "max_job_age_days": 7,
+    "max_active_jobs": 100,
+    "max_file_size_mb": 50,
+    "enable_job_metrics": true,
+    "log_job_details": true
+  },
+  "security": {
+    "min_password_length": 8,
+    "require_password_digit": true,
+    "require_password_letter": true,
+    "require_password_special": false,
+    "require_password_uppercase": false,
+    "allowed_file_extensions": [".pdf", ".docx"],
+    "max_upload_size_mb": 50,
+    "scan_uploads_for_malware": false,
+    "enable_rate_limiting": false,
+    "rate_limit_requests_per_minute": 60,
+    "enable_cors": false,
+    "token_expiry_hours": 24
+  },
+  "features": {
+    "enable_draft_mode": true,
+    "enable_watermark": true,
+    "enable_barcode": false,
+    "enable_encryption": true,
+    "enable_pdfa_conversion": true,
+    "enable_form_fields": true,
+    "enable_secsign_integration": true,
+    "enable_async_rendering": true,
+    "enable_download_tokens": true,
+    "enable_buildview_api": true,
+    "enable_ai_template_suggestions": false,
+    "enable_advanced_analytics": false,
+    "enable_batch_processing": false,
+    "enable_webhook_notifications": false
+  },
+  "performance": {
+    "cache_strategy": "memory",
+    "cache_max_size_mb": 512,
+    "cache_eviction_policy": "lru",
+    "db_pool_size": 10,
+    "db_pool_max_overflow": 20,
+    "worker_threads": 4,
+    "max_memory_usage_mb": 2048,
+    "enable_memory_monitoring": true
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "uv",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "developer",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "streetsidesoftware.code-spell-checker",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+
+  "features": {
+    "ghcr.io/guiyomh/features/just:0": {},
+    "ghcr.io/devcontainers/features/node:1": { "version": "lts" }
+  },
+
+  "forwardPorts": [5432],
+  "portsAttributes": {
+    "5432": {
+      "label": "Postgres",
+      "onAutoForward": "notify"
+    }
+  },
+
+  "postCreateCommand": "sudo chown -R $(id -u):$(id -g) /home/developer/.npm && echo 'chown: OK' || echo 'chown: FAILED'; uv sync --reinstall",
+  "postStartCommand": "sudo chown -R $(id -u):$(id -g) /home/developer/.npm || true"
+}
