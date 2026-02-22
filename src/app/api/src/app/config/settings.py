@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import json
 from functools import lru_cache
 
-from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,7 +21,7 @@ class Settings(BaseSettings):
 
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8000
-    API_CORS_ORIGINS: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
+    API_CORS_ORIGINS: str = "http://localhost:3000"
 
     DB_ENABLED: bool = True
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/quality_hub"
@@ -49,14 +49,23 @@ class Settings(BaseSettings):
 
     WATCH_STALE_TTL_SECONDS: int = 120
     WATCH_HEARTBEAT_INTERVAL_SECONDS: int = 15
+    WS_GITLAB_LIVE_DEFAULT_INTERVAL_SECONDS: int = 10
+    WS_GITLAB_LIVE_MAX_INTERVAL_SECONDS: int = 60
 
-    @field_validator("API_CORS_ORIGINS", mode="before")
-    @classmethod
-    def parse_origins(cls, value: str | list[str]) -> list[str]:
-        if isinstance(value, list):
-            return value
+    @property
+    def api_cors_origins(self) -> list[str]:
+        value = self.API_CORS_ORIGINS.strip()
         if not value:
             return []
+
+        if value.startswith("["):
+            try:
+                parsed = json.loads(value)
+            except json.JSONDecodeError:
+                parsed = None
+            if isinstance(parsed, list):
+                return [origin.strip() for origin in parsed if isinstance(origin, str) and origin.strip()]
+
         return [origin.strip() for origin in value.split(",") if origin.strip()]
 
     @property

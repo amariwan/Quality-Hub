@@ -5,6 +5,7 @@ services:
       dockerfile: infra/docker/web.Dockerfile
     environment:
       NEXT_PUBLIC_API_BASE_URL: http://localhost:8000/v1
+      NEXT_PUBLIC_GITLAB_BASE_URL: http://gitlab:8929
     ports:
       - '3000:3000'
     depends_on:
@@ -19,7 +20,7 @@ services:
       REDIS_URL: redis://redis:6379/0
       CELERY_BROKER_URL: redis://redis:6379/1
       CELERY_RESULT_BACKEND: redis://redis:6379/2
-      GITLAB_BASE_URL: https://gitlab.com
+      GITLAB_BASE_URL: http://gitlab:8929
       SESSION_SECRET: local-session-secret
       TOKEN_ENCRYPTION_KEY: local-token-key
       API_CORS_ORIGINS: http://localhost:3000
@@ -30,6 +31,7 @@ services:
     depends_on:
       - db
       - redis
+      - gitlab
 
   worker:
     build:
@@ -40,7 +42,7 @@ services:
       REDIS_URL: redis://redis:6379/0
       CELERY_BROKER_URL: redis://redis:6379/1
       CELERY_RESULT_BACKEND: redis://redis:6379/2
-      GITLAB_BASE_URL: https://gitlab.com
+      GITLAB_BASE_URL: http://gitlab:8929
       SESSION_SECRET: local-session-secret
       TOKEN_ENCRYPTION_KEY: local-token-key
       PYTHONPATH: /app/src/app/api/src
@@ -57,13 +59,29 @@ services:
       REDIS_URL: redis://redis:6379/0
       CELERY_BROKER_URL: redis://redis:6379/1
       CELERY_RESULT_BACKEND: redis://redis:6379/2
-      GITLAB_BASE_URL: https://gitlab.com
+      GITLAB_BASE_URL: http://gitlab:8929
       SESSION_SECRET: local-session-secret
       TOKEN_ENCRYPTION_KEY: local-token-key
       PYTHONPATH: /app/src/app/api/src
     command: ['/bin/bash', '-lc', './infra/docker/beat-entrypoint.sh']
     depends_on:
       - worker
+
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    hostname: gitlab
+    shm_size: '256m'
+    environment:
+      GITLAB_ROOT_EMAIL: root@example.local
+      GITLAB_ROOT_PASSWORD: root12345
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost:8929'
+    ports:
+      - '8929:8929'
+    volumes:
+      - gitlab_config:/etc/gitlab
+      - gitlab_logs:/var/log/gitlab
+      - gitlab_data:/var/opt/gitlab
 
   db:
     image: postgres:16
@@ -83,3 +101,6 @@ services:
 
 volumes:
   quality_hub_db:
+  gitlab_config:
+  gitlab_logs:
+  gitlab_data:

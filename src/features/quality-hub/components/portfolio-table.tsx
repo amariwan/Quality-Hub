@@ -80,7 +80,7 @@ export function PortfolioTable() {
                 <div className='flex items-center justify-between'>
                   <h3 className='font-medium'>
                     <Link
-                      href={`/dashboard/quality-hub/projects/${item.project_id}`}
+                      href={`/dashboard/projects/${item.project_id}`}
                       className='hover:underline'
                     >
                       {item.project || `Project ${item.project_id}`}

@@ -2,6 +2,10 @@
 
 Quality-Hub is a GitOps release-readiness and CI health dashboard for GitLab + Flux Kubernetes deployments.
 
+## Full documentation
+
+- Complete project documentation: `docs/COMPLETE_DOCUMENTATION.md`
+
 ## What this MVP includes
 
 - FastAPI backend in `src/app/api`
@@ -12,7 +16,7 @@ Quality-Hub is a GitOps release-readiness and CI health dashboard for GitLab + F
 - Flux deployment status APIs (`/v1/deployments/status`)
 - Workspace entities: views, notes, watchlist, tags
 - Team and team member management APIs
-- Local Docker Compose stack (`infra/compose.yaml`) with web/api/worker/beat/db/redis
+- Local Docker Compose stack (`infra/compose.yaml`) with web/api/worker/beat/gitlab/db/redis
 
 ## Local run (Docker Compose)
 
@@ -24,15 +28,23 @@ Services:
 
 - Web: `http://localhost:3000`
 - API: `http://localhost:8000`
+- GitLab (demo): `http://localhost:8929`
 - Postgres: `localhost:5432`
 - Redis: `localhost:6379`
+
+Notes:
+
+- First startup of GitLab can take several minutes.
+- GitLab CE typically needs at least ~4 GB RAM available for smooth startup.
+- Demo root account (first boot): user `root`, password `root12345`.
+- If the `gitlab_*` Docker volumes already exist, the password is whatever was set before.
 
 ## Required environment variables
 
 Compose already defines defaults for local run. For manual backend run, copy:
 
 ```bash
-cp src/app/api/.env.example src/app/api/.dev.env
+cp src/app/api/.env.example src/app/api/.env.dev
 ```
 
 Key vars:
@@ -48,12 +60,13 @@ Key vars:
 ## API quickstart
 
 1. Open `http://localhost:3000/auth/token`
-2. Enter GitLab base URL and Personal Access Token
-3. Add monitored groups via:
+2. Create a Personal Access Token in GitLab: `http://localhost:8929/-/profile/personal_access_tokens`
+3. In Quality-Hub, keep base URL `http://gitlab:8929` and enter your token
+4. Add monitored groups via:
    - `POST /v1/user/monitored-groups`
-4. Trigger project sync:
+5. Trigger project sync:
    - `POST /v1/projects/sync`
-5. Open portfolio:
+6. Open portfolio:
    - `http://localhost:3000/dashboard/quality-hub/portfolio`
 
 ## Cluster registration

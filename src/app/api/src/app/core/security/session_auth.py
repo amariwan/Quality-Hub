@@ -29,8 +29,7 @@ def clear_session(response: Response) -> None:
     response.delete_cookie(settings.SESSION_COOKIE_NAME, path="/")
 
 
-def get_session_user_id(request: Request) -> int | None:
-    raw = request.cookies.get(settings.SESSION_COOKIE_NAME)
+def get_session_user_id_from_raw(raw: str | None) -> int | None:
     if not raw:
         return None
     try:
@@ -41,6 +40,11 @@ def get_session_user_id(request: Request) -> int | None:
     if isinstance(user_id, int):
         return user_id
     return None
+
+
+def get_session_user_id(request: Request) -> int | None:
+    raw = request.cookies.get(settings.SESSION_COOKIE_NAME)
+    return get_session_user_id_from_raw(raw)
 
 
 async def get_current_user(

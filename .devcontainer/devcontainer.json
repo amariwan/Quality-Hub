@@ -2,10 +2,11 @@
   "name": "Quality-Hub Fullstack",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
-  "runServices": ["app", "db", "redis"],
+  "runServices": ["app", "db", "redis", "gitlab"],
   "workspaceFolder": "/workspace",
-  "remoteUser": "developer",
-  "updateRemoteUserUID": true,
+  "remoteUser": "root",
+  "containerUser": "root",
+  "updateRemoteUserUID": false,
 
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
@@ -43,7 +44,7 @@
     }
   },
 
-  "forwardPorts": [3000, 8000, 5432, 6379],
+  "forwardPorts": [3000, 8000, 8929, 5432, 6379],
   "portsAttributes": {
     "3000": {
       "label": "Next.js Web",
@@ -51,6 +52,10 @@
     },
     "8000": {
       "label": "FastAPI",
+      "onAutoForward": "notify"
+    },
+    "8929": {
+      "label": "GitLab Demo",
       "onAutoForward": "notify"
     },
     "5432": {
@@ -64,7 +69,8 @@
   },
 
   "remoteEnv": {
-    "PYTHONPATH": "/workspace/src/app/api/src"
+    "PYTHONPATH": "/workspace/src/app/api/src",
+    "COREPACK_HOME": "/root/.local/share/corepack"
   },
 
   "postCreateCommand": "bash .devcontainer/post-create.sh",

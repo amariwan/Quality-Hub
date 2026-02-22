@@ -7,10 +7,13 @@ import { connectGitlabToken } from '@/features/quality-hub/api/client';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+const defaultGitlabBaseUrl =
+  process.env.NEXT_PUBLIC_GITLAB_BASE_URL ?? 'https://gitlab.com';
+
 export default function TokenAuthPage() {
   const router = useRouter();
   const [token, setToken] = useState('');
-  const [baseUrl, setBaseUrl] = useState('https://gitlab.com');
+  const [baseUrl, setBaseUrl] = useState(defaultGitlabBaseUrl);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,7 +46,7 @@ export default function TokenAuthPage() {
                   token: token.trim(),
                   base_url: baseUrl.trim()
                 });
-                router.push('/dashboard/quality-hub/portfolio');
+                router.push('/dashboard/portfolio');
               } catch (err) {
                 setError(
                   err instanceof Error ? err.message : 'Connection failed'

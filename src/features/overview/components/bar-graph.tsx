@@ -16,6 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent
 } from '@/components/ui/chart';
+import { Button } from '@/components/ui/button';
 
 export const description = 'An interactive bar chart';
 
@@ -176,10 +177,12 @@ export function BarGraph() {
             const chart = key as keyof typeof chartConfig;
             if (!chart || total[key as keyof typeof total] === 0) return null;
             return (
-              <button
+              <Button
                 key={chart}
+                variant='ghost'
+                size='sm'
                 data-active={activeChart === chart}
-                className='data-[active=true]:bg-primary/5 hover:bg-primary/5 relative flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left transition-colors duration-200 even:border-l sm:border-t-0 sm:border-l sm:px-8 sm:py-6'
+                className='data-[active=true]:bg-primary/5 hover:bg-primary/5 relative h-auto flex-1 flex-col justify-center gap-1 rounded-none border-t px-6 py-4 text-left transition-colors duration-200 even:border-l sm:border-t-0 sm:border-l sm:px-8 sm:py-6'
                 onClick={() => setActiveChart(chart)}
               >
                 <span className='text-muted-foreground text-xs'>
@@ -188,7 +191,7 @@ export function BarGraph() {
                 <span className='text-lg leading-none font-bold sm:text-3xl'>
                   {total[key as keyof typeof total]?.toLocaleString()}
                 </span>
-              </button>
+              </Button>
             );
           })}
         </div>

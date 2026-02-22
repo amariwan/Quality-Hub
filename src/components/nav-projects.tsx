@@ -42,15 +42,12 @@ export function NavProjects({
       <SidebarMenu>
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <a href={item.url}>
-                <item.icon />
-                <span>{item.name}</span>
-              </a>
-            </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuAction showOnHover>
+                <SidebarMenuAction
+                  showOnHover
+                  className='hover:bg-primary/10 hover:text-primary transition-all duration-200'
+                >
                   <IconDots />
                   <span className='sr-only'>More</span>
                 </SidebarMenuAction>
@@ -60,16 +57,16 @@ export function NavProjects({
                 side={isMobile ? 'bottom' : 'right'}
                 align={isMobile ? 'end' : 'start'}
               >
-                <DropdownMenuItem>
+                <DropdownMenuItem className='transition-all duration-150 hover:translate-x-0.5'>
                   <IconFolder className='text-muted-foreground mr-2 h-4 w-4' />
                   <span>View Project</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem className='transition-all duration-150 hover:translate-x-0.5'>
                   <IconShare className='text-muted-foreground mr-2 h-4 w-4' />
                   <span>Share Project</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem className='transition-all duration-150 hover:translate-x-0.5'>
                   <IconTrash className='text-muted-foreground mr-2 h-4 w-4' />
                   <span>Delete Project</span>
                 </DropdownMenuItem>
@@ -78,8 +75,8 @@ export function NavProjects({
           </SidebarMenuItem>
         ))}
         <SidebarMenuItem>
-          <SidebarMenuButton className='text-sidebar-foreground/70'>
-            <IconDots className='text-sidebar-foreground/70' />
+          <SidebarMenuButton className='group text-sidebar-foreground/70 hover:bg-primary/10 hover:text-primary transition-all duration-200'>
+            <IconDots className='text-sidebar-foreground/70 transition-transform duration-200 group-hover:scale-105' />
             <span>More</span>
           </SidebarMenuButton>
         </SidebarMenuItem>

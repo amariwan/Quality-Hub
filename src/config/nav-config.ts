@@ -2,44 +2,67 @@ import { NavItem } from '@/types';
 
 export const navItems: NavItem[] = [
   {
+    title: 'Dashboard',
+    url: '/dashboard',
+    icon: 'dashboard',
+    isActive: true,
+    items: []
+  },
+  {
     title: 'Portfolio',
-    url: '/dashboard/quality-hub/portfolio',
+    url: '/dashboard/portfolio',
     icon: 'dashboard',
     isActive: true,
     items: []
   },
   {
     title: 'Pipelines',
-    url: '/dashboard/quality-hub/pipelines',
+    url: '/dashboard/pipelines',
     icon: 'warning',
     isActive: false,
     items: []
   },
   {
-    title: 'Workspace',
+    title: 'GitLab',
     url: '#',
-    icon: 'workspace',
+    icon: 'kanban',
     isActive: false,
     items: [
       {
+        title: 'Overview',
+        url: '/dashboard/gitlab'
+      },
+      {
+        title: 'Groups (Workspaces)',
+        url: '/dashboard/groups'
+      },
+      {
         title: 'Views',
-        url: '/dashboard/quality-hub/workspace/views'
+        url: '/dashboard/workspace/views'
       },
       {
         title: 'Notes',
-        url: '/dashboard/quality-hub/workspace/notes'
+        url: '/dashboard/workspace/notes'
       },
       {
         title: 'Watchlist',
-        url: '/dashboard/quality-hub/workspace/watchlist'
+        url: '/dashboard/workspace/watchlist'
       },
       {
         title: 'Tags',
-        url: '/dashboard/quality-hub/workspace/tags'
+        url: '/dashboard/workspace/tags'
       },
       {
         title: 'Teams',
-        url: '/dashboard/quality-hub/workspace/teams'
+        url: '/dashboard/workspace/teams'
+      },
+      {
+        title: 'Tickets',
+        url: '/dashboard/workspace/tickets'
+      },
+      {
+        title: 'Settings',
+        url: '/dashboard/workspace/settings'
       }
     ]
   }

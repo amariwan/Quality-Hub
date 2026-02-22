@@ -32,6 +32,7 @@ async def list_gitlab_groups(
             "path": group.get("path") or group.get("full_path"),
             "full_path": group.get("full_path") or group.get("path"),
             "name": group.get("name") or str(group["id"]),
+            "web_url": group.get("web_url"),
         }
         for group in groups
     ]

@@ -8,9 +8,10 @@ export default defineConfig({
     }
   },
   test: {
-    environment: 'node',
+    // use jsdom so React components can render during unit tests
+    environment: 'jsdom',
     globals: true,
-    include: ['src/**/*.spec.ts'],
+    include: ['src/**/*.{spec.ts,spec.tsx}'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html']

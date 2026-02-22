@@ -1,33 +1,62 @@
 {
-  "name": "uv",
-  "dockerComposeFile": "docker-compose.yml",
+  "name": "Quality-Hub API (Fullstack Services)",
+  "dockerComposeFile": "../../../../.devcontainer/docker-compose.yml",
   "service": "app",
-  "workspaceFolder": "/workspace",
-  "remoteUser": "developer",
+  "runServices": ["app", "db", "redis", "gitlab"],
+  "workspaceFolder": "/workspace/src/app/api",
+  "remoteUser": "root",
+  "containerUser": "root",
+  "updateRemoteUserUID": false,
 
   "customizations": {
     "vscode": {
       "extensions": [
         "ms-python.python",
-        "streetsidesoftware.code-spell-checker",
-        "esbenp.prettier-vscode"
-      ]
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker",
+        "redhat.vscode-yaml"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/workspace/src/app/api/.venv/bin/python",
+        "python.testing.pytestEnabled": true,
+        "python.testing.pytestArgs": ["src/app/api/tests"],
+        "python.analysis.extraPaths": ["/workspace/src/app/api/src"]
+      }
     }
   },
 
-  "features": {
-    "ghcr.io/guiyomh/features/just:0": {},
-    "ghcr.io/devcontainers/features/node:1": { "version": "lts" }
-  },
-
-  "forwardPorts": [5432],
+  "forwardPorts": [3000, 8000, 8929, 5432, 6379],
   "portsAttributes": {
-    "5432": {
-      "label": "Postgres",
+    "3000": {
+      "label": "Next.js Web",
       "onAutoForward": "notify"
+    },
+    "8000": {
+      "label": "FastAPI",
+      "onAutoForward": "notify"
+    },
+    "8929": {
+      "label": "GitLab Demo",
+      "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    },
+    "6379": {
+      "label": "Redis",
+      "onAutoForward": "silent"
     }
   },
 
-  "postCreateCommand": "sudo chown -R $(id -u):$(id -g) /home/developer/.npm && echo 'chown: OK' || echo 'chown: FAILED'; uv sync --reinstall",
-  "postStartCommand": "sudo chown -R $(id -u):$(id -g) /home/developer/.npm || true"
+  "remoteEnv": {
+    "PYTHONPATH": "/workspace/src/app/api/src",
+    "COREPACK_HOME": "/root/.local/share/corepack"
+  },
+
+  "postCreateCommand": "bash /workspace/.devcontainer/post-create.sh",
+  "postStartCommand": "bash /workspace/.devcontainer/post-start.sh"
 }

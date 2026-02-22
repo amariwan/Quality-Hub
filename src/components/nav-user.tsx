@@ -44,7 +44,7 @@ export function NavUser({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size='lg'
-              className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+              className='group data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-primary/10 hover:text-primary transition-all duration-200'
             >
               <Avatar className='h-8 w-8 rounded-lg'>
                 <AvatarImage src={user.avatar} alt={user.name} />
@@ -54,7 +54,7 @@ export function NavUser({
                 <span className='truncate font-semibold'>{user.name}</span>
                 <span className='truncate text-xs'>{user.email}</span>
               </div>
-              <IconChevronsDown className='ml-auto size-4' />
+              <IconChevronsDown className='ml-auto size-4 transition-transform duration-200 group-hover:translate-y-0.5' />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -77,28 +77,28 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem className='transition-all duration-150 hover:translate-x-0.5'>
                 <IconSparkles className='mr-2 h-4 w-4' />
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem className='transition-all duration-150 hover:translate-x-0.5'>
                 <IconCircleCheck className='mr-2 h-4 w-4' />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem className='transition-all duration-150 hover:translate-x-0.5'>
                 <IconCreditCard className='mr-2 h-4 w-4' />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem className='transition-all duration-150 hover:translate-x-0.5'>
                 <IconBell className='mr-2 h-4 w-4' />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem className='transition-all duration-150 hover:translate-x-0.5'>
               <IconLogout className='mr-2 h-4 w-4' />
               Log out
             </DropdownMenuItem>

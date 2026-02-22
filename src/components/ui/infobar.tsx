@@ -360,7 +360,7 @@ function InfobarRail({ className, ...props }: React.ComponentProps<'button'>) {
   const { toggleInfobar } = useInfobar();
 
   return (
-    <button
+    <Button
       data-infobar='rail'
       data-slot='infobar-rail'
       aria-label='Toggle Infobar'

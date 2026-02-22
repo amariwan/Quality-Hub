@@ -171,6 +171,9 @@ class QualityHubRepository:
         stmt = select(ProjectModel).where(ProjectModel.gitlab_project_id == gitlab_project_id)
         return (await self.session.execute(stmt)).scalar_one_or_none()
 
+    async def get_project(self, project_id: int) -> ProjectModel | None:
+        return await self.session.get(ProjectModel, project_id)
+
     async def list_projects(self) -> Sequence[ProjectModel]:
         stmt = select(ProjectModel).order_by(ProjectModel.path_with_namespace)
         return (await self.session.execute(stmt)).scalars().all()
@@ -401,6 +404,19 @@ class QualityHubRepository:
     async def get_watchlist_item(self, item_id: int, owner_user_id: int) -> WorkspaceWatchlistModel | None:
         stmt = select(WorkspaceWatchlistModel).where(
             and_(WorkspaceWatchlistModel.id == item_id, WorkspaceWatchlistModel.owner_user_id == owner_user_id)
+        )
+        return (await self.session.execute(stmt)).scalar_one_or_none()
+
+    async def get_watchlist_item_by_project(
+        self,
+        owner_user_id: int,
+        project_id: int,
+    ) -> WorkspaceWatchlistModel | None:
+        stmt = select(WorkspaceWatchlistModel).where(
+            and_(
+                WorkspaceWatchlistModel.owner_user_id == owner_user_id,
+                WorkspaceWatchlistModel.project_id == project_id,
+            )
         )
         return (await self.session.execute(stmt)).scalar_one_or_none()
 

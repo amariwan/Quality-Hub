@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime
 
+import httpx
+
 from app.services.quality_hub.infrastructure.adapters.gitlab_rest_client import GitLabRestClient
 
 
@@ -15,14 +17,60 @@ async def list_groups(*, token: str, base_url: str) -> list[dict]:
     return await client.list_groups(token)
 
 
+async def list_projects(*, token: str, base_url: str) -> list[dict]:
+    client = GitLabRestClient(base_url=base_url)
+    return await client.list_projects(token)
+
+
 async def list_group_projects(*, token: str, base_url: str, group_id: int) -> list[dict]:
     client = GitLabRestClient(base_url=base_url)
     return await client.list_group_projects(token, group_id)
 
 
-async def list_project_pipelines(*, token: str, base_url: str, project_id: int) -> list[dict]:
+async def get_project(*, token: str, base_url: str, project_id: int) -> dict | None:
     client = GitLabRestClient(base_url=base_url)
-    return await client.list_project_pipelines(token, project_id)
+    try:
+        return await client.get_project(token, project_id)
+    except httpx.HTTPError:
+        return None
+
+
+async def list_project_pipelines(
+    *,
+    token: str,
+    base_url: str,
+    project_id: int,
+    status: str | None = None,
+    ref: str | None = None,
+    source: str | None = None,
+    limit: int = 50,
+) -> list[dict]:
+    client = GitLabRestClient(base_url=base_url)
+    return await client.list_project_pipelines(
+        token,
+        project_id,
+        status=status,
+        ref=ref,
+        source=source,
+        limit=limit,
+    )
+
+
+async def list_project_merge_requests(
+    *,
+    token: str,
+    base_url: str,
+    project_id: int,
+    state: str = "opened",
+    limit: int = 200,
+) -> list[dict]:
+    client = GitLabRestClient(base_url=base_url)
+    return await client.list_project_merge_requests(
+        token,
+        project_id,
+        state=state,
+        limit=limit,
+    )
 
 
 async def resolve_revision_metadata(*, token: str, base_url: str, project_id: int, sha: str | None) -> dict:

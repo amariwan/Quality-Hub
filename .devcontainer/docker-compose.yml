@@ -6,21 +6,25 @@ services:
     command: sleep infinity
     volumes:
       - ..:/workspace:cached
-      - pnpm_store:/home/developer/.local/share/pnpm/store
-      - uv_cache:/home/developer/.cache/uv
+      - pnpm_store:/root/.local/share/pnpm/store
+      - corepack_home:/root/.local/share/corepack
+      - uv_cache:/root/.cache/uv
     environment:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/quality_hub
       REDIS_URL: redis://redis:6379/0
       CELERY_BROKER_URL: redis://redis:6379/1
       CELERY_RESULT_BACKEND: redis://redis:6379/2
-      GITLAB_BASE_URL: https://gitlab.com
+      GITLAB_BASE_URL: http://gitlab:8929
       NEXT_PUBLIC_API_BASE_URL: http://localhost:8000/v1
+      NEXT_PUBLIC_GITLAB_BASE_URL: http://gitlab:8929
       PYTHONPATH: /workspace/src/app/api/src
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
+      gitlab:
+        condition: service_started
 
   db:
     image: postgres:16
@@ -50,7 +54,28 @@ services:
       timeout: 3s
       retries: 20
 
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    restart: unless-stopped
+    hostname: gitlab
+    shm_size: '256m'
+    environment:
+      GITLAB_ROOT_EMAIL: root@example.local
+      GITLAB_ROOT_PASSWORD: root12345
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost:8929'
+    ports:
+      - '8929:8929'
+    volumes:
+      - gitlab_config:/etc/gitlab
+      - gitlab_logs:/var/log/gitlab
+      - gitlab_data:/var/opt/gitlab
+
 volumes:
   postgres_data:
   pnpm_store:
+  corepack_home:
   uv_cache:
+  gitlab_config:
+  gitlab_logs:
+  gitlab_data:

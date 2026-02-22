@@ -59,3 +59,76 @@ export type TeamMember = {
   user_id: number;
   role: string;
 };
+
+export type GitlabGroup = {
+  id: number;
+  path: string;
+  full_path: string;
+  name: string;
+  web_url: string | null;
+};
+
+export type WorkspaceGroup = {
+  id: number;
+  gitlab_group_id: number;
+  gitlab_group_path: string;
+};
+
+export type GitlabProject = {
+  id: number;
+  name: string;
+  path_with_namespace: string | null;
+  default_branch: string | null;
+  web_url: string | null;
+};
+
+export type GitlabProjectEvent = {
+  id: number | null;
+  status: string | null;
+  ref: string | null;
+  sha: string | null;
+  source: string | null;
+  updated_at: string | null;
+  web_url: string | null;
+};
+
+export type GitlabProjectEventsResponse = {
+  project_id: number;
+  count: number;
+  status_counts: Record<string, number>;
+  items: GitlabProjectEvent[];
+};
+
+export type GitlabProjectInsight = {
+  project_id: number;
+  open_merge_requests: number;
+  pipelines_sampled: number;
+  failed_pipelines: number;
+  success_pipelines: number;
+  running_pipelines: number;
+  failure_rate_pct: number;
+  latest_pipeline_status: string | null;
+  latest_pipeline_updated_at: string | null;
+  attention_level: 'low' | 'medium' | 'high';
+};
+
+export type GitlabProjectInsightsResponse = {
+  count: number;
+  totals: {
+    projects: number;
+    open_merge_requests: number;
+    pipelines_sampled: number;
+    failed_pipelines: number;
+    failure_rate_pct: number;
+  };
+  items: GitlabProjectInsight[];
+};
+
+export type QualityHubRuntimeSettings = {
+  api_version: string;
+  environment: string;
+  gitlab_base_url: string;
+  ws_live_default_interval_seconds: number;
+  ws_live_max_interval_seconds: number;
+  watch_heartbeat_interval_seconds: number;
+};
