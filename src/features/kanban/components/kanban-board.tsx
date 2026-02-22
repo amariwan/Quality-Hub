@@ -23,22 +23,7 @@ import NewSectionDialog from './new-section-dialog';
 import { TaskCard } from './task-card';
 // import { coordinateGetter } from "./multipleContainersKeyboardPreset";
 
-const defaultCols = [
-  {
-    id: 'TODO' as const,
-    title: 'Todo'
-  },
-  {
-    id: 'IN_PROGRESS' as const,
-    title: 'In progress'
-  },
-  {
-    id: 'DONE' as const,
-    title: 'Done'
-  }
-] satisfies Column[];
-
-export type ColumnId = (typeof defaultCols)[number]['id'];
+export type ColumnId = Column['id'];
 
 export function KanbanBoard() {
   // const [columns, setColumns] = useState<Column[]>(defaultCols);

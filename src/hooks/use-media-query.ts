@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 
 export function useMediaQuery() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(() =>
+    globalThis.window
+      ? globalThis.window.matchMedia('(max-width: 768px)').matches
+      : false
+  );
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 768px)');
-    setIsOpen(mediaQuery.matches);
-
+    const mediaQuery = globalThis.window.matchMedia('(max-width: 768px)');
     const handler = (e: MediaQueryListEvent) => {
       setIsOpen(e.matches);
     };
