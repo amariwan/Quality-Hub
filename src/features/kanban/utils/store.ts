@@ -6,14 +6,15 @@ import { Column } from '../components/board-column';
 
 export type Status = 'TODO' | 'IN_PROGRESS' | 'DONE';
 
-const defaultCols = [
-  {
-    id: 'TODO' as const,
-    title: 'Todo'
-  }
-] satisfies Column[];
+// by design, column identifiers are the same as task statuses
+const defaultCols: Column[] = [
+  { id: 'TODO', title: 'Todo' },
+  { id: 'IN_PROGRESS', title: 'In Progress' },
+  { id: 'DONE', title: 'Done' }
+];
 
-export type ColumnId = (typeof defaultCols)[number]['id'];
+// column IDs are simply the Status union
+export type ColumnId = Status;
 
 export type Task = {
   id: string;

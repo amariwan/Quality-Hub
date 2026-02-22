@@ -32,12 +32,8 @@
         "terminal.integrated.defaultProfile.linux": "zsh",
         "python.defaultInterpreterPath": "/workspace/src/app/api/.venv/bin/python",
         "python.testing.pytestEnabled": true,
-        "python.testing.pytestArgs": [
-          "src/app/api/tests"
-        ],
-        "python.analysis.extraPaths": [
-          "/workspace/src/app/api/src"
-        ],
+        "python.testing.pytestArgs": ["src/app/api/tests"],
+        "python.analysis.extraPaths": ["/workspace/src/app/api/src"],
         "eslint.workingDirectories": [
           {
             "mode": "auto"

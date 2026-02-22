@@ -1,7 +1,7 @@
 'use client';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Task, useTaskStore } from '../utils/store';
+import { Task, useTaskStore, Status } from '../utils/store';
 import { hasDraggableData } from '../utils';
 import {
   Announcements,
@@ -23,15 +23,14 @@ import NewSectionDialog from './new-section-dialog';
 import { TaskCard } from './task-card';
 // import { coordinateGetter } from "./multipleContainersKeyboardPreset";
 
-export type ColumnId = Column['id'];
+// column identifiers correspond directly to task statuses
+export type ColumnId = Status;
 
 export function KanbanBoard() {
   // const [columns, setColumns] = useState<Column[]>(defaultCols);
   const columns = useTaskStore((state) => state.columns);
   const setColumns = useTaskStore((state) => state.setCols);
-  const pickedUpTaskColumn = useRef<ColumnId | 'TODO' | 'IN_PROGRESS' | 'DONE'>(
-    'TODO'
-  );
+  const pickedUpTaskColumn = useRef<ColumnId>('TODO');
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
   // const [tasks, setTasks] = useState<Task[]>(initialTasks);
@@ -289,7 +288,8 @@ export function KanbanBoard() {
       const activeIndex = tasks.findIndex((t) => t.id === activeId);
       const activeTask = tasks[activeIndex];
       if (activeTask) {
-        activeTask.status = overId as ColumnId;
+        // overId should correspond to one of the allowed Status values
+        activeTask.status = overId as Status;
         setTasks(arrayMove(tasks, activeIndex, activeIndex));
       }
     }

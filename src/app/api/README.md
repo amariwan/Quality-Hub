@@ -14,8 +14,8 @@ This service provides the backend APIs for Quality-Hub MVP.
 
 ```bash
 cd src/app/api
-cp .env.example .dev.env
-# edit .dev.env values as needed
+cp .env.example .env.dev
+# edit .env.dev values as needed
 ```
 
 ## Run API only

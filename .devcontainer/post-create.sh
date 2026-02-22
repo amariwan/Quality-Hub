@@ -17,8 +17,8 @@ uv python install 3.13
 if [ -d src/app/api ]; then
   cd src/app/api
 
-  if [ ! -f .dev.env ] && [ -f .env.example ]; then
-    cp .env.example .dev.env
+  if [ ! -f .env.dev ] && [ -f .env.example ]; then
+    cp .env.example .env.dev
   fi
 
   echo "[devcontainer] Syncing Python dependencies..."
