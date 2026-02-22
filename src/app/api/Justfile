@@ -112,6 +112,10 @@ fix-all: fix fmt
 update:
     uv sync --upgrade --all-extras
 
+update-db:
+    uv run alembic upgrade head
+
+
 
 # ----------------------------------------------------------------------
 # Health

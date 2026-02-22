@@ -9,6 +9,13 @@ export const navItems: NavItem[] = [
     items: []
   },
   {
+    title: 'Release Readiness',
+    url: '/dashboard/release-readiness',
+    icon: 'dashboard',
+    isActive: true,
+    items: []
+  },
+  {
     title: 'Portfolio',
     url: '/dashboard/portfolio',
     icon: 'dashboard',
@@ -38,31 +45,55 @@ export const navItems: NavItem[] = [
       },
       {
         title: 'Views',
-        url: '/dashboard/workspace/views'
+        url: '/dashboard/:workspace/views'
       },
       {
         title: 'Notes',
-        url: '/dashboard/workspace/notes'
+        url: '/dashboard/:workspace/notes'
       },
       {
         title: 'Watchlist',
-        url: '/dashboard/workspace/watchlist'
+        url: '/dashboard/:workspace/watchlist'
       },
       {
         title: 'Tags',
-        url: '/dashboard/workspace/tags'
+        url: '/dashboard/:workspace/tags'
       },
       {
         title: 'Teams',
-        url: '/dashboard/workspace/teams'
+        url: '/dashboard/:workspace/teams'
       },
       {
         title: 'Tickets',
-        url: '/dashboard/workspace/tickets'
+        url: '/dashboard/:workspace/tickets'
+      },
+      {
+        title: 'Change Log',
+        url: '/dashboard/:workspace/change-log'
+      },
+      {
+        title: 'Project Mapping',
+        url: '/dashboard/:workspace/project-mapping'
+      },
+      {
+        title: 'Cluster Registry',
+        url: '/dashboard/:workspace/cluster-registry'
+      },
+      {
+        title: 'Services',
+        url: '/dashboard/:workspace/services'
+      },
+      {
+        title: 'Clusters',
+        url: '/dashboard/:workspace/clusters'
+      },
+      {
+        title: 'Environments',
+        url: '/dashboard/:workspace/environments'
       },
       {
         title: 'Settings',
-        url: '/dashboard/workspace/settings'
+        url: '/dashboard/:workspace/settings'
       }
     ]
   }

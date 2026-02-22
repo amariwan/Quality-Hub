@@ -5,70 +5,140 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { EnvStatusChip } from '@/features/quality-hub/components/env-status-chips';
 import {
-  getPortfolio,
+  listWorkspaceGroups,
   triggerProjectSync
 } from '@/features/quality-hub/api/client';
-import { PortfolioItem } from '@/features/quality-hub/types';
+import { usePortfolio } from '@/features/quality-hub/api/swr';
+import { workspaceSlugFromGroupPath } from '@/features/quality-hub/workspace-context';
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import useSWR from 'swr';
+
+const DASHBOARD_STATIC_SEGMENTS = new Set([
+  'dashboard',
+  'risk-radar',
+  'release-readiness',
+  'portfolio',
+  'pipelines',
+  'gitlab',
+  'groups',
+  'projects',
+  'product',
+  'profile',
+  'workspaces',
+  'overview',
+  'kanban',
+  'workspace'
+]);
+
+function extractWorkspaceSlugFromPathname(pathname: string): string | null {
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments.length < 2 || segments[0] !== 'dashboard') return null;
+  const candidate = segments[1] || null;
+  if (!candidate || DASHBOARD_STATIC_SEGMENTS.has(candidate)) return null;
+  return candidate;
+}
 
 export function PortfolioTable() {
-  const [items, setItems] = useState<PortfolioItem[]>([]);
   const [showClusters, setShowClusters] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
+  const pathname = usePathname();
+  const workspaceSlug = useMemo(
+    () => extractWorkspaceSlugFromPathname(pathname || ''),
+    [pathname]
+  );
+  const {
+    data: workspaceGroups,
+    error: workspaceGroupsError,
+    isLoading: isWorkspaceGroupsLoading
+  } = useSWR(
+    workspaceSlug ? ['quality-hub', 'workspace-groups', 'portfolio'] : null,
+    () => listWorkspaceGroups()
+  );
+  const matchedWorkspace = useMemo(() => {
+    if (!workspaceSlug || !workspaceGroups?.length) return null;
+    return (
+      workspaceGroups.find(
+        (group) =>
+          workspaceSlugFromGroupPath(group.gitlab_group_path) === workspaceSlug
+      ) || null
+    );
+  }, [workspaceGroups, workspaceSlug]);
+  const workspaceId = workspaceSlug ? matchedWorkspace?.id : null;
+  const isResolvingWorkspace =
+    Boolean(workspaceSlug) && isWorkspaceGroupsLoading && !workspaceGroupsError;
 
-  const loadData = useCallback(async (nextShowClusters: boolean) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await getPortfolio({
-        showClusters: nextShowClusters,
-        scope: 'readiness'
-      });
-      setItems(data.items);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load portfolio');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void loadData(showClusters);
-  }, [loadData, showClusters]);
+  const { data, error, isLoading, mutate } = usePortfolio(
+    showClusters,
+    workspaceId
+  );
+  const items = data?.items ?? [];
+  const workspaceErrorMessage = workspaceSlug
+    ? workspaceGroupsError
+      ? workspaceGroupsError instanceof Error
+        ? workspaceGroupsError.message
+        : 'Failed to load workspace scope'
+      : !isWorkspaceGroupsLoading && !matchedWorkspace
+        ? `Workspace "${workspaceSlug}" not found.`
+        : null
+    : null;
+  const displayError =
+    actionError ||
+    workspaceErrorMessage ||
+    (error
+      ? error instanceof Error
+        ? error.message
+        : 'Failed to load portfolio'
+      : null);
 
   return (
     <Card>
       <CardHeader className='flex flex-row items-center justify-between'>
-        <CardTitle>Release Readiness Portfolio</CardTitle>
+        <CardTitle>
+          Release Readiness Portfolio
+          {matchedWorkspace ? ` (${matchedWorkspace.gitlab_group_path})` : ''}
+        </CardTitle>
         <div className='flex gap-2'>
           <Button
             variant='outline'
-            onClick={async () => {
-              const next = !showClusters;
-              setShowClusters(next);
-              await loadData(next);
+            onClick={() => {
+              setActionError(null);
+              setShowClusters((current) => !current);
             }}
           >
             {showClusters ? 'Hide clusters' : 'Show clusters'}
           </Button>
           <Button
             onClick={async () => {
-              await triggerProjectSync();
-              await loadData(showClusters);
+              try {
+                setSyncing(true);
+                setActionError(null);
+                await triggerProjectSync();
+                await mutate();
+              } catch (err) {
+                setActionError(
+                  err instanceof Error ? err.message : 'Failed to sync projects'
+                );
+              } finally {
+                setSyncing(false);
+              }
             }}
+            disabled={syncing}
           >
-            Sync projects
+            {syncing ? 'Syncing...' : 'Sync projects'}
           </Button>
         </div>
       </CardHeader>
       <CardContent>
-        {loading && (
+        {(isLoading || isResolvingWorkspace) && (
           <p className='text-muted-foreground text-sm'>Loading portfolio...</p>
         )}
-        {error && <p className='text-destructive text-sm'>{error}</p>}
-        {!loading && !error && (
+        {displayError && (
+          <p className='text-destructive text-sm'>{displayError}</p>
+        )}
+        {!isLoading && !isResolvingWorkspace && !displayError && (
           <div className='space-y-3'>
             {items.length === 0 && (
               <p className='text-muted-foreground text-sm'>

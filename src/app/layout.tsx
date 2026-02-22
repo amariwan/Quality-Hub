@@ -16,8 +16,9 @@ const META_THEME_COLORS = {
 };
 
 export const metadata: Metadata = {
-  title: 'Next Shadcn',
-  description: 'Basic dashboard with Next.js and Shadcn'
+  title: 'QualityHub',
+  description:
+    'A platform to share and discover quality resources for developers.'
 };
 
 export const viewport: Viewport = {

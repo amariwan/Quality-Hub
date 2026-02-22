@@ -3,48 +3,45 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import {
-  addTeamMember,
-  createTeam,
-  listTeamMembers,
-  listTeams
-} from '@/features/quality-hub/api/client';
+import { addTeamMember, createTeam } from '@/features/quality-hub/api/client';
+import { useTeamMembers, useTeams } from '@/features/quality-hub/api/swr';
 import { Team, TeamMember } from '@/features/quality-hub/types';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+
+const EMPTY_TEAMS: Team[] = [];
+const EMPTY_TEAM_MEMBERS: TeamMember[] = [];
 
 export function TeamManagement() {
-  const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
-  const [members, setMembers] = useState<TeamMember[]>([]);
   const [teamName, setTeamName] = useState('');
   const [memberUserId, setMemberUserId] = useState('');
   const [memberRole, setMemberRole] = useState('member');
-  const [error, setError] = useState<string | null>(null);
-
-  const loadTeams = useCallback(async () => {
-    try {
-      const data = await listTeams();
-      setTeams(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load teams');
-    }
-  }, []);
-
-  const loadMembers = useCallback(async (teamId: number) => {
-    try {
-      const data = await listTeamMembers(teamId);
-      setMembers(data);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to load team members'
-      );
-    }
-  }, []);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void loadTeams();
-  }, [loadTeams]);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const {
+    data: teamsData,
+    error: teamsError,
+    isLoading: teamsLoading,
+    mutate: mutateTeams
+  } = useTeams();
+  const {
+    data: membersData,
+    error: membersError,
+    isLoading: membersLoading,
+    mutate: mutateMembers
+  } = useTeamMembers(selectedTeamId);
+  const teams = teamsData ?? EMPTY_TEAMS;
+  const members = membersData ?? EMPTY_TEAM_MEMBERS;
+  const errorMessage =
+    actionError ||
+    (teamsError
+      ? teamsError instanceof Error
+        ? teamsError.message
+        : 'Failed to load teams'
+      : membersError
+        ? membersError instanceof Error
+          ? membersError.message
+          : 'Failed to load team members'
+        : null);
 
   useEffect(() => {
     if (!selectedTeamId && teams.length > 0) {
@@ -53,20 +50,18 @@ export function TeamManagement() {
     }
   }, [selectedTeamId, teams]);
 
-  useEffect(() => {
-    if (selectedTeamId) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      void loadMembers(selectedTeamId);
-    }
-  }, [loadMembers, selectedTeamId]);
-
   return (
     <Card>
       <CardHeader>
         <CardTitle>Teams & Memberships</CardTitle>
       </CardHeader>
       <CardContent className='space-y-4'>
-        {error && <p className='text-destructive text-sm'>{error}</p>}
+        {teamsLoading && (
+          <p className='text-muted-foreground text-sm'>Loading teams...</p>
+        )}
+        {errorMessage && (
+          <p className='text-destructive text-sm'>{errorMessage}</p>
+        )}
 
         <div className='flex gap-2'>
           <Input
@@ -77,9 +72,16 @@ export function TeamManagement() {
           <Button
             onClick={async () => {
               if (!teamName.trim()) return;
-              await createTeam({ name: teamName.trim() });
-              setTeamName('');
-              await loadTeams();
+              try {
+                setActionError(null);
+                await createTeam({ name: teamName.trim() });
+                setTeamName('');
+                await mutateTeams();
+              } catch (err) {
+                setActionError(
+                  err instanceof Error ? err.message : 'Failed to create team'
+                );
+              }
             }}
           >
             Create Team
@@ -115,12 +117,21 @@ export function TeamManagement() {
               <Button
                 onClick={async () => {
                   if (!memberUserId.trim()) return;
-                  await addTeamMember(selectedTeamId, {
-                    user_id: Number(memberUserId),
-                    role: memberRole
-                  });
-                  setMemberUserId('');
-                  await loadMembers(selectedTeamId);
+                  try {
+                    setActionError(null);
+                    await addTeamMember(selectedTeamId, {
+                      user_id: Number(memberUserId),
+                      role: memberRole
+                    });
+                    setMemberUserId('');
+                    await mutateMembers();
+                  } catch (err) {
+                    setActionError(
+                      err instanceof Error
+                        ? err.message
+                        : 'Failed to add team member'
+                    );
+                  }
                 }}
               >
                 Add Member
@@ -128,7 +139,12 @@ export function TeamManagement() {
             </div>
 
             <div className='space-y-1'>
-              {members.length === 0 && (
+              {membersLoading && (
+                <p className='text-muted-foreground text-sm'>
+                  Loading team members...
+                </p>
+              )}
+              {members.length === 0 && !membersLoading && (
                 <p className='text-muted-foreground text-sm'>
                   No members in this team yet.
                 </p>

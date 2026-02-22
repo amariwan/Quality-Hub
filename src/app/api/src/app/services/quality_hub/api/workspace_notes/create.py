@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db.session import get_db_session
@@ -20,8 +20,13 @@ async def create_note(
     session: AsyncSession = Depends(get_db_session),
 ) -> dict:
     repository = QualityHubRepository(session)
+    workspace = await repository.get_monitored_group(payload.workspace_id, current_user.id)
+    if workspace is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Workspace not found")
+
     item = await repository.create_note(
         owner_user_id=current_user.id,
+        workspace_group_id=workspace.id,
         visibility=ensure_visibility(payload.visibility),
         team_id=payload.team_id,
         scope_type=payload.scope_type,
@@ -32,7 +37,9 @@ async def create_note(
     )
     return {
         "id": item.id,
+        "workspace_id": item.workspace_group_id,
         "visibility": item.visibility,
+        "team_id": item.team_id,
         "scope_type": item.scope_type,
         "project_id": item.project_id,
         "env": item.env,

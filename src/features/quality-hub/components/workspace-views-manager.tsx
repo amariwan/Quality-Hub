@@ -3,39 +3,26 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import {
-  createWorkspaceView,
-  listWorkspaceViews
-} from '@/features/quality-hub/api/client';
-import { useEffect, useState } from 'react';
+import { createWorkspaceView } from '@/features/quality-hub/api/client';
+import { useWorkspaceViews } from '@/features/quality-hub/api/swr';
+import { useState } from 'react';
 
 export function WorkspaceViewsManager() {
   const [name, setName] = useState('');
-  const [items, setItems] = useState<
-    Array<{ id: number; name: string; visibility: string }>
-  >([]);
-  const [error, setError] = useState<string | null>(null);
-
-  async function loadItems() {
-    try {
-      setError(null);
-      const data = await listWorkspaceViews();
-      setItems(
-        data.map((item) => ({
-          id: item.id,
-          name: item.name,
-          visibility: item.visibility
-        }))
-      );
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load views');
-    }
-  }
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void loadItems();
-  }, []);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const { data, error, isLoading, mutate } = useWorkspaceViews();
+  const items = (data ?? []).map((item) => ({
+    id: item.id,
+    name: item.name,
+    visibility: item.visibility
+  }));
+  const errorMessage =
+    actionError ||
+    (error
+      ? error instanceof Error
+        ? error.message
+        : 'Failed to load views'
+      : null);
 
   return (
     <Card>
@@ -49,18 +36,30 @@ export function WorkspaceViewsManager() {
           <Button
             onClick={async () => {
               if (!name.trim()) return;
-              await createWorkspaceView({
-                name: name.trim(),
-                definition_json: {}
-              });
-              setName('');
-              await loadItems();
+              try {
+                setActionError(null);
+                await createWorkspaceView({
+                  name: name.trim(),
+                  definition_json: {}
+                });
+                setName('');
+                await mutate();
+              } catch (err) {
+                setActionError(
+                  err instanceof Error ? err.message : 'Failed to create view'
+                );
+              }
             }}
           >
             Add View
           </Button>
         </div>
-        {error && <p className='text-destructive text-sm'>{error}</p>}
+        {isLoading && (
+          <p className='text-muted-foreground text-sm'>Loading views...</p>
+        )}
+        {errorMessage && (
+          <p className='text-destructive text-sm'>{errorMessage}</p>
+        )}
         <div className='space-y-1'>
           {items.map((item) => (
             <p key={item.id} className='text-sm'>

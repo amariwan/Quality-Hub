@@ -596,7 +596,7 @@ function countToRows(
     const key = raw.trim().toLowerCase() || 'unknown';
     map.set(key, (map.get(key) ?? 0) + 1);
   }
-  return [...map.entries()]
+  return Array.from(map.entries())
     .map(([name, value]) => ({
       name: formatLabel ? formatLabel(name) : name,
       value
@@ -628,7 +628,7 @@ function buildLiveDataSnapshot(args: {
       failureReasonMap.set(key, (failureReasonMap.get(key) ?? 0) + 1);
     }
   }
-  const failureReasonsRows = [...failureReasonMap.entries()]
+  const failureReasonsRows = Array.from(failureReasonMap.entries())
     .map(([name, value]) => ({ name, value }))
     .sort((a, b) => b.value - a.value)
     .slice(0, 8);
@@ -1137,9 +1137,11 @@ export function UserWidgetBoard() {
 
     let insights: GitlabProjectInsight[] = [];
     if (projectRows.length > 0) {
-      const projectIds = [
-        ...new Set(projectRows.map((project) => project.gitlab_project_id))
-      ];
+      // spreading a Set requires ES2015+ or downlevelIteration, which isn't enabled in our tsconfig (target is es5).
+      // convert via Array.from to avoid compiler errors.
+      const projectIds = Array.from(
+        new Set(projectRows.map((project) => project.gitlab_project_id))
+      );
       try {
         const insightsResponse = await getGitlabProjectsInsights(
           projectIds,

@@ -11,6 +11,23 @@ export type ActiveWorkspaceContext = {
   gitlabGroupPath: string | null;
 };
 
+export function workspaceSlugFromGroupPath(
+  gitlabGroupPath: string | null | undefined
+): string | null {
+  if (!gitlabGroupPath) return null;
+  const trimmed = gitlabGroupPath.trim();
+  if (!trimmed) return null;
+
+  const segments = trimmed.split('/').filter(Boolean);
+  const candidate = (segments[segments.length - 1] || trimmed).toLowerCase();
+  const slug = candidate
+    .replace(/[^a-z0-9_-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  return slug || null;
+}
+
 export function readActiveWorkspaceContext(): ActiveWorkspaceContext {
   if (typeof window === 'undefined') {
     return { workspaceId: null, gitlabGroupId: null, gitlabGroupPath: null };

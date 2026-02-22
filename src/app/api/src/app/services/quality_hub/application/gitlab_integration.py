@@ -35,7 +35,7 @@ async def get_project(*, token: str, base_url: str, project_id: int) -> dict | N
         return None
 
 
-async def list_project_pipelines(
+async def list_project_pipelines(  # noqa: PLR0913
     *,
     token: str,
     base_url: str,
@@ -70,6 +70,95 @@ async def list_project_merge_requests(
         project_id,
         state=state,
         limit=limit,
+    )
+
+
+async def get_project_merge_request_changed_paths(
+    *,
+    token: str,
+    base_url: str,
+    project_id: int,
+    merge_request_iid: int,
+) -> list[str]:
+    client = GitLabRestClient(base_url=base_url)
+    return await client.get_project_merge_request_changed_paths(
+        token,
+        project_id,
+        merge_request_iid,
+    )
+
+
+async def list_group_issues(  # noqa: PLR0913
+    *,
+    token: str,
+    base_url: str,
+    group_id: int,
+    state: str = "opened",
+    search: str | None = None,
+    limit: int = 200,
+) -> list[dict]:
+    client = GitLabRestClient(base_url=base_url)
+    return await client.list_group_issues(
+        token,
+        group_id,
+        state=state,
+        search=search,
+        limit=limit,
+    )
+
+
+async def create_project_issue(  # noqa: PLR0913
+    *,
+    token: str,
+    base_url: str,
+    project_id: int,
+    title: str,
+    description: str | None = None,
+    labels: list[str] | None = None,
+    due_date: str | None = None,
+) -> dict:
+    client = GitLabRestClient(base_url=base_url)
+    return await client.create_project_issue(
+        token,
+        project_id,
+        title=title,
+        description=description,
+        labels=labels,
+        due_date=due_date,
+    )
+
+
+async def list_project_repository_tree(
+    *,
+    token: str,
+    base_url: str,
+    project_id: int,
+    ref: str | None = None,
+    recursive: bool = True,
+) -> list[dict]:
+    client = GitLabRestClient(base_url=base_url)
+    return await client.list_project_repository_tree(
+        token,
+        project_id,
+        ref=ref,
+        recursive=recursive,
+    )
+
+
+async def get_project_file_raw(
+    *,
+    token: str,
+    base_url: str,
+    project_id: int,
+    file_path: str,
+    ref: str,
+) -> str:
+    client = GitLabRestClient(base_url=base_url)
+    return await client.get_project_file_raw(
+        token,
+        project_id,
+        file_path=file_path,
+        ref=ref,
     )
 
 

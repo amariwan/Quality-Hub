@@ -1,33 +1,15 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getProjectMatrix } from '@/features/quality-hub/api/client';
-import { ProjectMatrixResponse } from '@/features/quality-hub/types';
-import { useEffect, useState } from 'react';
+import { useProjectMatrix } from '@/features/quality-hub/api/swr';
 
 export function ProjectMatrix({ projectId }: { projectId: number }) {
-  const [data, setData] = useState<ProjectMatrixResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function loadData() {
-      try {
-        setLoading(true);
-        setError(null);
-        const result = await getProjectMatrix(projectId);
-        setData(result);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Failed to load project matrix'
-        );
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    void loadData();
-  }, [projectId]);
+  const { data, error, isLoading } = useProjectMatrix(projectId);
+  const errorMessage = error
+    ? error instanceof Error
+      ? error.message
+      : 'Failed to load project matrix'
+    : null;
 
   return (
     <Card>
@@ -35,11 +17,13 @@ export function ProjectMatrix({ projectId }: { projectId: number }) {
         <CardTitle>Project {projectId} Deployment Matrix</CardTitle>
       </CardHeader>
       <CardContent>
-        {loading && (
+        {isLoading && (
           <p className='text-muted-foreground text-sm'>Loading matrix...</p>
         )}
-        {error && <p className='text-destructive text-sm'>{error}</p>}
-        {!loading && !error && data && (
+        {errorMessage && (
+          <p className='text-destructive text-sm'>{errorMessage}</p>
+        )}
+        {!isLoading && !errorMessage && data && (
           <div className='space-y-3'>
             {Object.keys(data.matrix).length === 0 && (
               <p className='text-muted-foreground text-sm'>

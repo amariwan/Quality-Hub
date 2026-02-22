@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db.session import get_db_session
@@ -15,14 +15,27 @@ router = APIRouter(prefix="/pipelines", tags=["pipelines"])
 @router.get("")
 async def list_pipelines(
     scope: str = Query(default="all", pattern="^(all|readiness)$"),
-    current_user: UserModel = Depends(get_current_user),
-    session: AsyncSession = Depends(get_db_session),
+    workspace_id: int | None = Query(default=None, gt=0),
+    current_user: UserModel = Depends(get_current_user),  # noqa: B008
+    session: AsyncSession = Depends(get_db_session),  # noqa: B008
 ) -> dict:
     repository = QualityHubRepository(session)
-    rows = await list_broken_pipelines(repository, scope=scope)
+    workspace_group_path: str | None = None
+    if workspace_id is not None:
+        workspace = await repository.get_monitored_group(workspace_id, current_user.id)
+        if workspace is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Workspace not found")
+        workspace_group_path = workspace.gitlab_group_path
+
+    rows = await list_broken_pipelines(
+        repository,
+        scope=scope,
+        workspace_group_path=workspace_group_path,
+    )
     return {
         "scope": scope,
         "count": len(rows),
         "items": rows,
         "user_id": current_user.id,
+        "workspace_id": workspace_id,
     }

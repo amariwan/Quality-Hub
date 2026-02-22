@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 
 class NoteCreateRequest(BaseModel):
+    workspace_id: int
     visibility: str = "PRIVATE"
     team_id: int | None = None
     scope_type: str = "PROJECT"

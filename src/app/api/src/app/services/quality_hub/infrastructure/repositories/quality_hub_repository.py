@@ -21,6 +21,7 @@ from app.services.quality_hub.infrastructure.models import (
     TagModel,
     TeamMemberModel,
     TeamModel,
+    TeamProjectMappingModel,
     UserModel,
     WatchLeaseModel,
     WorkspaceViewModel,
@@ -178,7 +179,7 @@ class QualityHubRepository:
         stmt = select(ProjectModel).order_by(ProjectModel.path_with_namespace)
         return (await self.session.execute(stmt)).scalars().all()
 
-    async def upsert_pipeline(
+    async def upsert_pipeline(  # noqa: PLR0913
         self,
         *,
         project_id: int,
@@ -235,6 +236,10 @@ class QualityHubRepository:
 
     async def list_reports_for_pipeline(self, pipeline_id: int) -> Sequence[ReportModel]:
         stmt = select(ReportModel).where(ReportModel.pipeline_id == pipeline_id)
+        return (await self.session.execute(stmt)).scalars().all()
+
+    async def list_reports(self) -> Sequence[ReportModel]:
+        stmt = select(ReportModel).order_by(ReportModel.created_at.desc())
         return (await self.session.execute(stmt)).scalars().all()
 
     async def upsert_deployment(self, key: dict, payload: dict) -> DeploymentModel:
@@ -367,16 +372,42 @@ class QualityHubRepository:
         await self.session.refresh(item)
         return item
 
-    async def list_notes(self, owner_user_id: int) -> Sequence[NoteModel]:
-        stmt = select(NoteModel).where(NoteModel.owner_user_id == owner_user_id)
+    async def list_notes(
+        self,
+        owner_user_id: int,
+        workspace_group_id: int,
+    ) -> Sequence[NoteModel]:
+        stmt = select(NoteModel).where(
+            and_(
+                NoteModel.owner_user_id == owner_user_id,
+                NoteModel.workspace_group_id == workspace_group_id,
+            )
+        )
         return (await self.session.execute(stmt)).scalars().all()
 
-    async def get_note(self, item_id: int, owner_user_id: int) -> NoteModel | None:
-        stmt = select(NoteModel).where(and_(NoteModel.id == item_id, NoteModel.owner_user_id == owner_user_id))
+    async def get_note(
+        self,
+        item_id: int,
+        owner_user_id: int,
+        workspace_group_id: int,
+    ) -> NoteModel | None:
+        stmt = select(NoteModel).where(
+            and_(
+                NoteModel.id == item_id,
+                NoteModel.owner_user_id == owner_user_id,
+                NoteModel.workspace_group_id == workspace_group_id,
+            )
+        )
         return (await self.session.execute(stmt)).scalar_one_or_none()
 
-    async def update_note(self, item_id: int, owner_user_id: int, payload: dict) -> NoteModel | None:
-        item = await self.get_note(item_id, owner_user_id)
+    async def update_note(
+        self,
+        item_id: int,
+        owner_user_id: int,
+        workspace_group_id: int,
+        payload: dict,
+    ) -> NoteModel | None:
+        item = await self.get_note(item_id, owner_user_id, workspace_group_id)
         if item is None:
             return None
         for field, value in payload.items():
@@ -385,8 +416,21 @@ class QualityHubRepository:
         await self.session.refresh(item)
         return item
 
-    async def delete_note(self, item_id: int, owner_user_id: int) -> bool:
-        result = await self.session.execute(delete(NoteModel).where(and_(NoteModel.id == item_id, NoteModel.owner_user_id == owner_user_id)))
+    async def delete_note(
+        self,
+        item_id: int,
+        owner_user_id: int,
+        workspace_group_id: int,
+    ) -> bool:
+        result = await self.session.execute(
+            delete(NoteModel).where(
+                and_(
+                    NoteModel.id == item_id,
+                    NoteModel.owner_user_id == owner_user_id,
+                    NoteModel.workspace_group_id == workspace_group_id,
+                )
+            )
+        )
         await self.session.commit()
         return result.rowcount > 0
 
@@ -567,3 +611,22 @@ class QualityHubRepository:
     async def count_projects(self) -> int:
         stmt = select(func.count(ProjectModel.id))
         return int((await self.session.execute(stmt)).scalar_one())
+
+    async def create_team_project_mapping(self, team_id: int, project_id: int) -> TeamProjectMappingModel:
+        item = TeamProjectMappingModel(team_id=team_id, project_id=project_id)
+        self.session.add(item)
+        await self.session.commit()
+        await self.session.refresh(item)
+        return item
+
+    async def list_team_project_mappings(self) -> Sequence[TeamProjectMappingModel]:
+        stmt = select(TeamProjectMappingModel).order_by(TeamProjectMappingModel.id.desc())
+        return (await self.session.execute(stmt)).scalars().all()
+
+    async def get_team_project_mapping(self, mapping_id: int) -> TeamProjectMappingModel | None:
+        return await self.session.get(TeamProjectMappingModel, mapping_id)
+
+    async def delete_team_project_mapping(self, mapping_id: int) -> bool:
+        result = await self.session.execute(delete(TeamProjectMappingModel).where(TeamProjectMappingModel.id == mapping_id))
+        await self.session.commit()
+        return result.rowcount > 0

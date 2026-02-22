@@ -44,10 +44,16 @@ export function UserNav() {
       hint: 'G W'
     },
     {
+      label: 'Release Readiness',
+      path: '/dashboard/release-readiness',
+      icon: IconActivityHeartbeat,
+      hint: 'G P'
+    },
+    {
       label: 'Portfolio',
       path: '/dashboard/portfolio',
       icon: IconActivityHeartbeat,
-      hint: 'G P'
+      hint: 'G O'
     },
     {
       label: 'Pipelines',

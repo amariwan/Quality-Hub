@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db.session import get_db_session
@@ -15,13 +15,26 @@ router = APIRouter(prefix="/deployments/status", tags=["deployments"])
 @router.get("")
 async def list_deployment_status(
     show_clusters: bool = Query(default=False),
-    current_user: UserModel = Depends(get_current_user),
-    session: AsyncSession = Depends(get_db_session),
+    workspace_id: int | None = Query(default=None, gt=0),
+    current_user: UserModel = Depends(get_current_user),  # noqa: B008
+    session: AsyncSession = Depends(get_db_session),  # noqa: B008
 ) -> dict:
     repository = QualityHubRepository(session)
-    items = await get_portfolio_status(repository, show_clusters=show_clusters)
+    workspace_group_path: str | None = None
+    if workspace_id is not None:
+        workspace = await repository.get_monitored_group(workspace_id, current_user.id)
+        if workspace is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Workspace not found")
+        workspace_group_path = workspace.gitlab_group_path
+
+    items = await get_portfolio_status(
+        repository,
+        show_clusters=show_clusters,
+        workspace_group_path=workspace_group_path,
+    )
     return {
         "user_id": current_user.id,
         "show_clusters": show_clusters,
+        "workspace_id": workspace_id,
         "items": items,
     }

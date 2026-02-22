@@ -12,8 +12,7 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { getRuntimeSettings } from '@/features/quality-hub/api/client';
-import { QualityHubRuntimeSettings } from '@/features/quality-hub/types';
+import { useRuntimeSettings } from '@/features/quality-hub/api/swr';
 import { readActiveWorkspaceContext } from '@/features/quality-hub/workspace-context';
 import { useEffect, useState } from 'react';
 
@@ -69,9 +68,12 @@ const PROFILE_PRESETS: Record<
 };
 
 export function SettingsManager() {
-  const [runtime, setRuntime] = useState<QualityHubRuntimeSettings | null>(
-    null
-  );
+  const {
+    data: runtime,
+    error: runtimeError,
+    isLoading: runtimeLoading,
+    mutate: reloadRuntime
+  } = useRuntimeSettings();
   const [profile, setProfile] = useState<TeamProfile>('custom');
   const [liveEnabled, setLiveEnabled] = useState(false);
   const [liveInterval, setLiveInterval] = useState(10);
@@ -82,7 +84,6 @@ export function SettingsManager() {
   const [notifyHigh, setNotifyHigh] = useState(true);
   const [desktopNotify, setDesktopNotify] = useState(false);
   const [scopeLabel, setScopeLabel] = useState('global');
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -95,6 +96,7 @@ export function SettingsManager() {
     const scope = context.gitlabGroupId
       ? `group:${context.gitlabGroupId}`
       : 'global';
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initialize persisted scope label on mount.
     setScopeLabel(context.gitlabGroupPath || scope);
     const readString = (key: string) =>
       window.localStorage.getItem(keyForScope(scope, key)) ||
@@ -127,24 +129,12 @@ export function SettingsManager() {
     }
   }, []);
 
-  const loadRuntime = async () => {
-    setLoading(true);
-    try {
-      setError(null);
-      const data = await getRuntimeSettings();
-      setRuntime(data);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to load runtime settings'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    void loadRuntime();
-  }, []);
+  const runtimeErrorMessage = runtimeError
+    ? runtimeError instanceof Error
+      ? runtimeError.message
+      : 'Failed to load runtime settings'
+    : null;
+  const displayError = error || runtimeErrorMessage;
 
   const saveSettings = () => {
     if (typeof window === 'undefined') return;
@@ -325,15 +315,17 @@ export function SettingsManager() {
           <Button onClick={saveSettings}>Save UI Settings</Button>
           <Button
             variant='outline'
-            onClick={() => void loadRuntime()}
-            disabled={loading}
+            onClick={() => void reloadRuntime()}
+            disabled={runtimeLoading}
           >
-            {loading ? 'Loading...' : 'Reload Runtime'}
+            {runtimeLoading ? 'Loading...' : 'Reload Runtime'}
           </Button>
           {message && <Badge variant='secondary'>{message}</Badge>}
         </div>
 
-        {error && <p className='text-destructive text-sm'>{error}</p>}
+        {displayError && (
+          <p className='text-destructive text-sm'>{displayError}</p>
+        )}
 
         {runtime && (
           <div className='space-y-2 rounded-md border p-3 text-sm'>
