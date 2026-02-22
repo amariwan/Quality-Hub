@@ -31,6 +31,7 @@ import {
   IconX,
   IconLayoutKanban,
   IconBrandGithub,
+  IconChartBar,
   IconFolder,
   IconUsers,
   IconCrown,
@@ -81,5 +82,6 @@ export const Icons: IconsMap = {
   pro: IconCrown,
   exclusive: IconStar,
   account: IconUserCircle,
-  profile: IconUser
+  profile: IconUser,
+  chart: IconChartBar
 };

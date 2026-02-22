@@ -16,6 +16,13 @@ export const navItems: NavItem[] = [
     items: []
   },
   {
+    title: 'DORA Metrics',
+    url: '/dashboard/workspace/dora',
+    icon: 'chart',
+    isActive: true,
+    items: []
+  },
+  {
     title: 'Portfolio',
     url: '/dashboard/portfolio',
     icon: 'dashboard',

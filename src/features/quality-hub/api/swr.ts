@@ -1,5 +1,6 @@
 import useSWR from 'swr';
 import {
+  getDoraMetrics,
   getOpsOverview,
   getPipelines,
   getPortfolio,
@@ -58,7 +59,9 @@ export const qualityHubSWRKeys = {
     ] as const,
   workspaceTags: () => ['quality-hub', 'workspace-tags'] as const,
   opsOverview: (workspaceId: number | null, weeks: number, days: number) =>
-    ['quality-hub', 'ops-overview', workspaceId ?? 'all', weeks, days] as const
+    ['quality-hub', 'ops-overview', workspaceId ?? 'all', weeks, days] as const,
+  doraMetrics: (workspaceId: number | null, days: number) =>
+    ['quality-hub', 'dora-metrics', workspaceId ?? 'all', days] as const
 };
 
 export function usePortfolio(
@@ -189,5 +192,19 @@ export function useOpsOverview(
         weeks,
         days
       })
+  );
+}
+export function useDoraMetrics(
+  params: { workspaceId?: number | null; days?: number } = {}
+) {
+  const workspaceId =
+    params.workspaceId === undefined ? undefined : (params.workspaceId ?? null);
+  const days = params.days ?? 30;
+
+  return useSWR(
+    workspaceId === undefined
+      ? null
+      : qualityHubSWRKeys.doraMetrics(workspaceId, days),
+    () => getDoraMetrics({ workspaceId, days })
   );
 }
