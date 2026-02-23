@@ -1,10 +1,7 @@
-# Quality-Hub MVP
+# QualityHub
 
 Quality-Hub is a GitOps release-readiness and CI health dashboard for GitLab + Flux Kubernetes deployments.
 
-## Full documentation
-
-- Complete project documentation: `docs/COMPLETE_DOCUMENTATION.md`
 
 ## What this MVP includes
 
