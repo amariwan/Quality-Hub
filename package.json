@@ -31,7 +31,7 @@
     ]
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.38.1",
+    "@clerk/nextjs": "^6.39.2",
     "@clerk/themes": "^2.4.55",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^9.0.0",
@@ -80,11 +80,11 @@
     "kbar": "0.1.0-beta.48",
     "lucide-react": "^0.575.0",
     "motion": "^12.34.3",
-    "next": "16.1.6",
+    "next": "16.2.11",
     "next-themes": "^0.4.6",
     "nextjs-toploader": "^3.9.17",
     "nuqs": "^2.8.8",
-    "postcss": "8.5.6",
+    "postcss": "8.5.23",
     "react": "^19.2.4",
     "react-day-picker": "^9.13.2",
     "react-dom": "^19.2.4",
@@ -93,7 +93,7 @@
     "react-resizable-panels": "^4.6.5",
     "react-responsive": "^10.0.1",
     "recharts": "^3.7.0",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.0",
     "sonner": "^2.0.7",
     "sort-by": "^1.2.0",
     "swr": "^2.4.0",
@@ -101,7 +101,7 @@
     "tailwindcss": "^4.2.0",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.9.3",
-    "uuid": "^13.0.0",
+    "uuid": "^14.0.0",
     "vaul": "^1.1.2",
     "zod": "^4.3.6",
     "zustand": "^5.0.11"
@@ -124,6 +124,6 @@
     "prettier-plugin-tailwindcss": "^0.7.2",
     "ts-morph": "^27.0.2",
     "tw-animate-css": "^1.4.0",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   }
 }
